@@ -1,5 +1,6 @@
-import supa from "@/utils/supa";
 import { ReactElement, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import supa from "@/utils/supa";
 
 export type Trailer = {
   Titulo: string;
@@ -12,6 +13,8 @@ export type Trailer = {
 };
 
 export default function AdminPage(): ReactElement {
+  const { push } = useRouter();
+
   const [sdata, setSData] = useState([] as Array<Trailer>);
 
   const getTrailers = async () => {
@@ -32,6 +35,9 @@ export default function AdminPage(): ReactElement {
   };
 
   useEffect(() => {
+    const isAdmin = localStorage.getItem("IsAdmin");
+    if (isAdmin !== "true") push("/");
+
     getTrailers();
   }, []);
 

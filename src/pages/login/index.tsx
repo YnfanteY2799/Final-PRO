@@ -22,41 +22,25 @@ export default function LoginPage(): ReactElement {
   const { push } = useRouter();
 
   // Estado
-  const [users, setUsers] = useState([] as Array<Users>);
   const [us, setUs] = useState({} as User);
 
-  async function getInitialUsers() {
-    const { data } = await supa.from("usuario").select();
-
-    const uData: Array<Users> = (data ?? []).map(({ id, nombre, password }) => {
-      return {
-        id,
-        nombre,
-        password,
-      };
-    });
-
-    setUsers([...uData]);
-  }
-
-  function doSmit(e: FormEvent) {
+  async function doSmit(e: FormEvent) {
     e.preventDefault();
-    const userExists = users.filter(
-      ({nombre, password}) => nombre === us.nombre && password === us.password
-    ).length;
 
-    if (userExists > 0) {
+    const { data } = await supa.from("usuario").select().eq("nombre", us.nombre);
+
+    const userExists = (data ?? []).filter(({ password }) => password === us.password);
+
+    if (userExists.length > 0) {
       toast.success("Credenciales correctas, se le redireccionara acontinuacion");
 
       setTimeout(() => push("/admin"), 5000);
+      localStorage.setItem("IsAdmin", "true");
     } else {
       toast.error("Las credenciales provistas no son las correspondientes");
+      localStorage.setItem("IsAdmin", "false");
     }
   }
-
-  useEffect(() => {
-    getInitialUsers();
-  }, []);
 
   return (
     <div className="flex h-screen">
@@ -128,4 +112,7 @@ export default function LoginPage(): ReactElement {
       <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
+}
+function useLocal() {
+  throw new Error("Function not implemented.");
 }
