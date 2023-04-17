@@ -5,7 +5,6 @@ export default function Home() {
     <div className="h-full bg-gray-900">
       <Navbar />
       <Hero />
-      
     </div>
   );
 }

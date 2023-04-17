@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useEffect, useState } from "react";
+import { FormEvent, ReactElement, useState } from "react";
 import { AiOutlineMail } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useRouter } from "next/router";
@@ -112,7 +112,4 @@ export default function LoginPage(): ReactElement {
       <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
-}
-function useLocal() {
-  throw new Error("Function not implemented.");
 }

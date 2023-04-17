@@ -1,11 +1,15 @@
 import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { Trailer } from "@/pages/admin";
 import supa from "@/utils/supa";
+import Modal from "./Modal";
 
 export default function Hero(): ReactElement {
   const [searchWord, setSearchWord] = useState("Ts" as string);
   const [trailers, setTrailers] = useState([] as Array<Trailer>);
   const [baseTrailers, setBaseTrailers] = useState([] as Array<Trailer>);
+  const [isModalOpen, setIsModalOpen] = useState(false as boolean);
+  const [videoSrc, setVideoSrc] = useState("" as string);
+  const [selectedText, setSelectedText] = useState("" as string);
 
   async function goSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,6 +25,7 @@ export default function Hero(): ReactElement {
     const { data } = await supa.from("trailer").select();
     const manipuledData: Array<Trailer> = (data ?? []).map((x) => {
       return {
+        Id: x.id,
         Titulo: x.titulo,
         Año: x["año"],
         Director: x.director,
@@ -67,22 +72,30 @@ export default function Hero(): ReactElement {
       <div className="max-w-screen-xl mx-auto mt-28">
         <div className="container px-4 mx-auto my-12 md:px-12">
           <div className="flex flex-wrap gap-0 -mx-1 lg:-mx-4">
-            {trailers.map((x) => (
-              <div className="w-full px-1 my-1 border border-white md:w-1/2 lg:my-4 lg:px-4 lg:w-1/3">
+            {trailers.map((x, i) => (
+              <div
+                className="w-full px-1 my-1 border border-white md:w-1/2 lg:my-4 lg:px-4 lg:w-1/3"
+                key={i}
+              >
                 <article className="overflow-hidden rounded-lg shadow-lg">
-                  <a href="#">
-                    <img
-                      alt="Placeholder"
-                      className="block w-full h-auto text-white"
-                      src={x.ImagenPortada}
-                    />
-                  </a>
+                  <img
+                    alt="Placeholder"
+                    className="block w-full h-auto text-white"
+                    src={x.ImagenPortada}
+                  />
 
                   <header className="flex items-center justify-between p-2 leading-tight md:p-4">
                     <h1 className="text-lg">
-                      <a className="text-white no-underline hover:underline" href="#">
+                      <h2
+                        className="text-white no-underline hover:underline"
+                        onClick={() => {
+                          setVideoSrc(x.LinkTrailer);
+                          setIsModalOpen(!isModalOpen);
+                          setSelectedText(x.Resena);
+                        }}
+                      >
                         {x.Titulo}
-                      </a>
+                      </h2>
                     </h1>
                     <p className="text-sm text-white">{x.Año}</p>
                   </header>
@@ -98,6 +111,13 @@ export default function Hero(): ReactElement {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        src={videoSrc}
+        close={() => setIsModalOpen(!isModalOpen)}
+        text={selectedText}
+      />
     </div>
   );
 }
